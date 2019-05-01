@@ -50,7 +50,7 @@ public class SlackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                 sendMessageWithToken(evt);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
             addError("Error posting log to Slack.com (" + channel + "): " + evt, ex);
         }
     }
