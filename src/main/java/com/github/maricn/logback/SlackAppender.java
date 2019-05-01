@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -50,7 +51,7 @@ public class SlackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                 sendMessageWithToken(evt);
             }
         } catch (Exception ex) {
-            // ex.printStackTrace();
+            ex.printStackTrace();
             addError("Error posting log to Slack.com (" + channel + "): " + evt, ex);
         }
     }
@@ -210,8 +211,28 @@ public class SlackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         return webhookUri;
     }
 
-    public void setWebhookUri(String webhookUri) {
+    public void setWebhookUri( String webhookUri )
+    {
+        // Chery pick from stempler @ 771625f
+        // verify webhook - could be just environment variable that is not replaced
         this.webhookUri = webhookUri;
+        // only accept if it is a valid URI including scheme
+        try
+        {
+            URI uri = URI.create( webhookUri );
+            if ( uri.getScheme() != null )
+            {
+                // valid webhook
+                this.webhookUri = webhookUri;
+                return;
+            }
+        }
+        catch ( Exception e )
+        {
+            // ignore
+        }
+
+        this.webhookUri = null;
     }
 
     public Boolean getColorCoding() {
