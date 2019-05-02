@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019. Eric Draken - ericdraken.com
+  -->
+
+<configuration debug="false">
+    <statusListener class="com.github.maricn.logback.ErrorStatusListener" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] [%logger{0}] [%M:%L] - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Slack logs and appender -->
+    <appender name="SLACK_LOGS" class="com.github.maricn.logback.SlackAppender">
+        <webhookUri>https://hooks.slack.com/services/NOT/REAL/WEBHOOK</webhookUri>
+        <channel>#logs</channel>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] [%logger{0}] [%M:%L] - %m%n</pattern>
+        </layout>
+    </appender>
+    <appender name="ASYNC_SLACK_LOGS" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SLACK_LOGS" />
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <root level="INFO" additivity="true">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC_SLACK_LOGS" />
+    </root>
+</configuration>
